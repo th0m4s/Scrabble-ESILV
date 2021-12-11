@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace A2_POO_Scrabble
 {
@@ -57,6 +55,41 @@ namespace A2_POO_Scrabble
         public Plateau(string[] lignes)
         {
             VerifierPoids();
+            int nb_lignes = poids.GetLength(0), nb_col = poids.GetLength(1);
+            grille = new Jeton[nb_lignes, nb_col];
+            
+            if(lignes.Length != nb_lignes)
+            {
+                for(int i = 0; i < nb_lignes; i++)
+                {
+                    string[] parts = lignes[i].Split(';');
+                    for(int j = 0; j < Math.Min(parts.Length, nb_col); j++)
+                    {
+                        string part = parts[j];
+                        if (part.Length == 1 && part[0] != '_') grille[i, j] = new Jeton(part[0]);
+                        else if (part.Length == 2 && part[2] == '*') new Jeton(part[0], 0);
+                    }
+                }
+            }
+        }
+
+        public void SauvegarderPlateau(string fichier)
+        {
+            List<string> lignes = new List<string>();
+            for(int i = 0; i < grille.GetLength(0); i++)
+            {
+                List<string> parts = new List<string>();
+                for(int j = 0; j < grille.GetLength(1); j++)
+                {
+                    Jeton jeton = grille[i, j];
+                    if (jeton == null) parts.Add("_");
+                    else if (jeton.Score == 0) parts.Add(jeton.Lettre + "*");
+                    else parts.Add(jeton.Lettre.ToString());
+                }
+                lignes.Add(string.Join(';', parts));
+            }
+
+            File.WriteAllLines(fichier, lignes);
         }
 
         public void Afficher()

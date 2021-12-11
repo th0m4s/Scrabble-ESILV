@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace A2_POO_Scrabble
 {
@@ -27,7 +24,7 @@ namespace A2_POO_Scrabble
 
         bool RechercheDichoRecursif(int debut, int fin, List<string> liste, string element)
         {
-            if (liste.Count == 0 || debut == fin) return false;
+            if (liste.Count == 0 || debut == fin || debut + 1 == fin) return false;
 
             int pos = (debut + fin) / 2;
 

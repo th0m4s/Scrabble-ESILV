@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace A2_POO_Scrabble
+﻿namespace A2_POO_Scrabble
 {
     class Jeton
     {
@@ -35,6 +29,16 @@ namespace A2_POO_Scrabble
             return this == other;
         }
 
+        public override int GetHashCode()
+        {
+            return lettre << 4 + score;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Jeton && (Jeton)obj == this;
+        }
+
         public static bool operator ==(Jeton a, char b)
         {
             return !ReferenceEquals(a, null) && a.Lettre == b;
@@ -47,7 +51,7 @@ namespace A2_POO_Scrabble
 
         public static bool operator ==(Jeton a, Jeton b)
         {
-            return !ReferenceEquals(b, null) && a == b.Lettre;
+            return (ReferenceEquals(a, null) && ReferenceEquals(b, null)) || (!ReferenceEquals(b, null) && a == b.Lettre);
         }
 
         public static bool operator !=(Jeton a, Jeton b)

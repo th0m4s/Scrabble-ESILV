@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace A2_POO_Scrabble
 {
@@ -21,11 +20,17 @@ namespace A2_POO_Scrabble
                 int score = int.Parse(parts[1]);
                 char lettre = parts[0][0];
 
-                scores.Add(lettre, score);
+                if(!scores.ContainsKey(lettre))
+                    scores.Add(lettre, score);
 
                 for (int i = 0; i < int.Parse(parts[2]); i++)
                     jetons.Add(new Jeton(lettre, score));
             }
+        }
+
+        public void SauvegarderSacJetons(string fichier)
+        {
+            File.WriteAllLines(fichier, jetons.GroupBy(x => x.Lettre).Select(x => x.Key + ";" + x.First().Score + ";" + x.Count()));
         }
 
         public Jeton Retire_Jeton(Random r)

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace A2_POO_Scrabble
 {
@@ -12,6 +10,13 @@ namespace A2_POO_Scrabble
         int score;
         List<string> motsTrouves;
         List<Jeton> mainCourante;
+        int tours;
+
+        public int Tours
+        {
+            set { tours = value; }
+            get { return tours;  }
+        }
 
         public string Nom => nom;
         public int Score => score;
@@ -20,6 +25,7 @@ namespace A2_POO_Scrabble
         {
             this.nom = nom;
             this.score = 0;
+            this.tours = 0;
             this.motsTrouves = new List<string>();
             this.mainCourante = new List<Jeton>();
         }
@@ -29,9 +35,10 @@ namespace A2_POO_Scrabble
             string[][] parts = lignes.Select(x => x.Split(";")).ToArray();
 
             this.nom = parts[0][0];
+            if (!int.TryParse(parts[0].ElementAtOrDefault(2) ?? "0", out this.tours)) this.tours = 0; // default value for string is null
             this.score = int.Parse(parts[0][1]);
 
-            this.motsTrouves = parts[1].ToList();
+            this.motsTrouves = parts[1].Where(x => x.Length > 0).ToList();
             this.mainCourante = parts[2].Select(x => new Jeton(x[0])).ToList();
         }
 
@@ -104,6 +111,25 @@ namespace A2_POO_Scrabble
 
                 Console.Write("  ");
             }
+        }
+
+        public string[] Sauvegarder()
+        {
+            return new string[] {
+                nom + ";" + score + ";" + tours, motsTrouves.Count == 0 ? ";" : string.Join(";", motsTrouves), string.Join(";", mainCourante.Select(x => x.Lettre))
+            };
+        }
+
+        public static List<Joueur> ChargerJoueurs(string[] lignes)
+        {
+            List<string> _lignes = lignes.Select(x => x.Trim()).Where(x => x.Length > 0).ToList();
+            if (_lignes.Count % 3 != 0) return null;
+
+            List<Joueur> joueurs = new List<Joueur>();
+            for(int i = 0; i < _lignes.Count; i+=3)
+                joueurs.Add(new Joueur(_lignes.GetRange(i, 3).ToArray()));
+
+            return joueurs;
         }
     }
 }

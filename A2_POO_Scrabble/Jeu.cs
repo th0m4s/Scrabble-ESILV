@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,6 +11,21 @@ namespace A2_POO_Scrabble
 {
     class Jeu
     {
+        const int STD_INPUT_HANDLE = -10;
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern IntPtr GetStdHandle(int nStdHandle);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool CancelIoEx(IntPtr handle, IntPtr lpOverlapped);
+        static IntPtr StdHandle = GetStdHandle(STD_INPUT_HANDLE);
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")]
+        internal static extern bool PostMessage(IntPtr hWnd, uint msg, int wParam, int lParam);
+        static IntPtr ConsoleWindowHnd = GetForegroundWindow();
+        const int VK_RETURN = 0x0D;
+        const int WM_KEYDOWN = 0x100;
+
+
         Dictionnaire dictionnaire;
         Plateau plateau;
         Sac_Jetons sacJetons;
@@ -16,11 +33,12 @@ namespace A2_POO_Scrabble
 
         Random random;
 
-        public Jeu(Dictionnaire dictionnaire, Plateau plateau, Sac_Jetons sacJetons)
+        public Jeu(Dictionnaire dictionnaire, Plateau plateau, Sac_Jetons sacJetons, List<Joueur> joueurs = null)
         {
             this.dictionnaire = dictionnaire;
             this.plateau = plateau;
             this.sacJetons = sacJetons;
+            this.joueurs = joueurs;
 
             this.random = new Random();
         }
@@ -31,7 +49,6 @@ namespace A2_POO_Scrabble
             while(nb < 2 || nb > 4)
             {
                 Console.Clear();
-                Console.WriteLine("BIENVENUE AU SCRABBLE !");
                 Console.Write("Combien de joueurs vont jouer ? (entre 2 et 4) ");
                 int.TryParse(Console.ReadLine(), out nb);
             }
@@ -58,7 +75,6 @@ namespace A2_POO_Scrabble
                 Joueur joueur = new Joueur(nom);
                 for (int j = 0; j < 7; j++)
                     joueur.Add_Main_Courante(sacJetons.Retire_Jeton(random));
-                joueur.Add_Main_Courante(new Jeton('*', 0));
 
                 joueurs.Add(joueur);
             }
@@ -73,78 +89,123 @@ namespace A2_POO_Scrabble
                 Console.WriteLine("\nTour n°" + tour + ", c'est à " + nom + " de jouer !");
         }
 
+        public void SauvegarderJoueurs(string fichier)
+        {
+            List<string> lignes = new List<string>();
+            foreach(Joueur joueur in joueurs)
+                lignes.AddRange(joueur.Sauvegarder());
+            File.WriteAllLines(fichier, lignes);
+        }
+
         public void Jouer()
         {
             if (joueurs == null) return;
 
             int tour = 1;
+
+            int nbToursPremierJoueur = joueurs[0].Tours;
+            int aPasser = (nbToursPremierJoueur - 1) * joueurs.Count + joueurs.TakeWhile(x => x.Tours == nbToursPremierJoueur).Count();
+
             while(sacJetons.NombreJetons() > 0)
             {
-                foreach(Joueur j in joueurs)
+                foreach(Joueur joueur in joueurs)
                 {
+                    if(aPasser > 0)
+                    {
+                        aPasser--;
+                        continue;
+                    }
+
                     string mot;
                     int ligne = -1, colonne = -1;
                     char direction = '\0';
 
-                    AfficherTour(tour, j.Nom);
+                    AfficherTour(tour, joueur.Nom);
                     Console.WriteLine("Appuie sur une touche pour voir ta main...");
                     Console.ReadKey();
 
                     bool motPlace = true;
+                    bool tourFini = false;
 
-                    do
-                    {
-                        AfficherTour(tour, j.Nom);
-                        Console.Write("Voici ta main :\n\n   ");
-                        j.AfficherMain();
+                    Task task = Task.Delay(60_000).ContinueWith(_ => {
+                        if (tourFini) return;
 
-                        Console.Write("\n\nQuel mot veux tu jouer ? (en incluant les lettres déjà placées)\nN'écris rien pour remplacer tes jetons actuels.\n  ");
-                        mot = Console.ReadLine().ToUpper();
+                        CancelIoEx(StdHandle, IntPtr.Zero);
 
-                        if(mot.Length == 0)
+                        Task.Delay(100).ContinueWith(_ =>
                         {
-                            Console.Write("Veux-tu vraiment remplacer tous tes jetons et passer ton tour ?\n(écris o/oui ou y/yes pour continuer ou autre chose pour annuler)\n  ");
-                            string confirm = Console.ReadLine().Trim().ToUpper();
+                            PostMessage(ConsoleWindowHnd, WM_KEYDOWN, VK_RETURN, 0); // we need to send a return key to "finish" the readline operation that was started
+                        });
+                    });
 
-                            if (confirm == "O" || confirm == "OUI" || confirm == "Y" || confirm == "YES")
+                    try
+                    {
+                        do
+                        {
+                            AfficherTour(tour, joueur.Nom);
+                            Console.Write("Voici ta main :\n\n   ");
+                            joueur.AfficherMain();
+
+                            Console.Write("\n\nQuel mot veux tu jouer ? (en incluant les lettres déjà placées)\nN'écris rien pour remplacer tes jetons actuels.\n  ");
+                            mot = Console.ReadLine().ToUpper();
+
+                            if (mot.Length == 0)
                             {
-                                j.Remplacer_Jetons(sacJetons, random);
-                                Console.WriteLine("\nTes jetons ont été remplacés !");
-                                motPlace = false;
-                                break;
+                                Console.Write("Veux-tu vraiment remplacer tous tes jetons et passer ton tour ?\n(écris o/oui ou y/yes pour continuer ou autre chose pour annuler)\n  ");
+                                string confirm = Console.ReadLine().Trim().ToUpper();
+
+                                if (confirm == "O" || confirm == "OUI" || confirm == "Y" || confirm == "YES")
+                                {
+                                    joueur.Remplacer_Jetons(sacJetons, random);
+                                    Console.WriteLine("\nTes jetons ont été remplacés !");
+                                    motPlace = false;
+                                    break;
+                                }
+                                else continue;
                             }
+
+                            mot = Regex.Replace(mot, "[^A-Z]", "");
+                            if (mot.Length == 0) continue;
+
+                            Console.Write("\nA quelle position veux tu jouer ce mot ? (écrire la position de la 1re case - ie. en haut ou à gauche - séparés par un espace, ligne puis colonne :\n  ");
+                            string pos = Console.ReadLine().Trim();
+                            string[] posparts = pos.Split(',', ';', ' ', '/');
+
+                            if (posparts.Length != 2) continue;
+                            if (!int.TryParse(posparts[0], out ligne) || !int.TryParse(posparts[1], out colonne)) continue;
+
+                            Console.Write("\nDans quelle direction veux-tu placer ce mot ? (l/ligne ou c/colonne)\n  ");
+                            string dir = Console.ReadLine().Trim().ToUpper();
+                            if (dir == "L" || dir == "LIGNE") direction = 'L';
+                            else if (dir == "C" || dir == "COLONNE") direction = 'C';
                             else continue;
-                        }
 
-                        mot = Regex.Replace(mot, "[^A-Z]", "");
-                        if (mot.Length == 0) continue;
+                        } while (!plateau.Test_Plateau(mot, ligne - 1, colonne - 1, direction, dictionnaire, joueur));
 
-                        Console.Write("\nA quelle position veux tu jouer ce mot ? (écrire la position de la 1re case - ie. en haut ou à gauche - séparés par un espace, ligne puis colonne :\n  ");
-                        string pos = Console.ReadLine().Trim();
-                        string[] posparts = pos.Split(',', ';', ' ', '/');
-
-                        if (posparts.Length != 2) continue;
-                        if (!int.TryParse(posparts[0], out ligne) || !int.TryParse(posparts[1], out colonne)) continue;
-
-                        Console.Write("\nDans quelle direction veux-tu placer ce mot ? (l/ligne ou c/colonne)\n  ");
-                        string dir = Console.ReadLine().Trim().ToUpper();
-                        if (dir == "L" || dir == "LIGNE") direction = 'L';
-                        else if (dir == "C" || dir == "COLONNE") direction = 'C';
-                        else continue;
-
-                    } while (!plateau.Test_Plateau(mot, ligne-1, colonne-1, direction, dictionnaire, j));
-                    
-                    if(motPlace)
+                        tourFini = true;
+                    } catch(OperationCanceledException)
                     {
                         AfficherTour(tour);
-                        Console.WriteLine("\nTu as maintenant un score de " + j.Score);
+                        Console.WriteLine("\nLe temps est écoulé !\nDommage, tu pourras jouer au prochain tour...\n");
                     }
 
+
+                    joueur.Tours++;
+
+                    if(tourFini && motPlace)
+                    {
+                        AfficherTour(tour);
+                        Console.WriteLine("\nTu as maintenant un score de " + joueur.Score);
+                    }
+
+                    while (joueur.Nombre_Jetons() < 7)
+                        joueur.Add_Main_Courante(sacJetons.Retire_Jeton(random));
+
+                    plateau.SauvegarderPlateau("InstancePlateau.txt");
+                    sacJetons.SauvegarderSacJetons("InstanceJetons.txt");
+                    SauvegarderJoueurs("Joueurs.txt");
+
                     Console.WriteLine("Appuie sur une touche pour continuer...");
-
-                    while (j.Nombre_Jetons() < 7)
-                        j.Add_Main_Courante(sacJetons.Retire_Jeton(random));
-
                     Console.ReadKey();
                 }
 
