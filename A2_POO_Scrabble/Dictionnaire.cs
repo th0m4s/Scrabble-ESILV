@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace A2_POO_Scrabble
 {
-    class Dictionnaire
+    public class Dictionnaire
     {
         Dictionary<int, List<string>> mots = new Dictionary<int, List<string>>();
         string langue;

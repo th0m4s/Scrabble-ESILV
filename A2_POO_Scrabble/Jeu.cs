@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace A2_POO_Scrabble
 {
-    class Jeu
+    public class Jeu
     {
         const int STD_INPUT_HANDLE = -10;
         [DllImport("kernel32.dll", SetLastError = true)]

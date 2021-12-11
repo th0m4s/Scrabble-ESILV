@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace A2_POO_Scrabble
 {
-    class Sac_Jetons
+    public class Sac_Jetons
     {
         List<Jeton> jetons;
 
@@ -19,17 +19,21 @@ namespace A2_POO_Scrabble
         public Sac_Jetons(string[] lignes)
         {
             this.jetons = new List<Jeton>();
-            foreach(var ligne in lignes)
+
+            if(lignes != null)
             {
-                string[] parts = ligne.Split(";");
-                int score = int.Parse(parts[1]);
-                char lettre = parts[0][0];
+                foreach (var ligne in lignes)
+                {
+                    string[] parts = ligne.Split(";");
+                    int score = int.Parse(parts[1]);
+                    char lettre = parts[0][0];
 
-                if(!scores.ContainsKey(lettre))
-                    scores.Add(lettre, score);
+                    if (!scores.ContainsKey(lettre))
+                        scores.Add(lettre, score);
 
-                for (int i = 0; i < int.Parse(parts[2]); i++)
-                    jetons.Add(new Jeton(lettre, score));
+                    for (int i = 0; i < int.Parse(parts[2]); i++)
+                        jetons.Add(new Jeton(lettre, score));
+                }
             }
         }
 

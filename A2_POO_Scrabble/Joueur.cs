@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace A2_POO_Scrabble
 {
-    class Joueur
+    public class Joueur
     {
         string nom;
         int score;
@@ -54,7 +54,7 @@ namespace A2_POO_Scrabble
         public override string ToString()
         {
             return nom + " : " + score + " point" + (score == 1 ? "" : "s") + "\nMots trouvés :\n   " + string.Join(", ", motsTrouves)
-                + "\nJetons courants : \n" + string.Join("\n", mainCourante.Select(j => "  - " + j.ToString()));
+                + "\nJetons courants :\n" + string.Join("\n", mainCourante.Select(j => "  - " + j.ToString()));
         }
 
         /// <summary>

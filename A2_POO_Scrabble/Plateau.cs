@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace A2_POO_Scrabble
 {
-    class Plateau
+    public class Plateau
     {
         static int[,] poidsQuart = new int[,] {
             { -3,  0,  0,  2,  0,  0,  0, -3 },

@@ -1,6 +1,6 @@
 ﻿namespace A2_POO_Scrabble
 {
-    class Jeton
+    public class Jeton
     {
         char lettre;
         int score;
@@ -31,12 +31,7 @@
 
         public override string ToString()
         {
-            return "Jeton '" + lettre + "' (" + score + " point" + (score == 1 ? "" : "s") + ")";
-        }
-
-        public bool Equals(Jeton other)
-        {
-            return this == other;
+            return "Jeton '" + lettre + "' (" + score + " point" + (score <= 1 ? "" : "s") + ")";
         }
 
         public override int GetHashCode()
@@ -46,7 +41,7 @@
 
         public override bool Equals(object obj)
         {
-            return obj is Jeton && (Jeton)obj == this;
+            return (obj is Jeton && (Jeton)obj == this) || (obj is char && this == (char)obj);
         }
 
         public static bool operator ==(Jeton a, char b)
