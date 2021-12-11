@@ -108,29 +108,65 @@ namespace A2_POO_Scrabble
 
         /// <summary>
         /// Affiche la grille, les poids et jetons placés sur la Console en utilisant des couleurs.
+        /// Si joueurs est fourni, affiche les scores des joueurs à droite de la grille.
         /// </summary>
-        public void Afficher()
+        /// <param name="joueurs">La liste des joueurs.</param>
+        /// <param name="joueurEnCours">Le nom du joueur en cours.</param>
+        public void Afficher(List<Joueur> joueurs = null, string joueurEnCours = null)
         {
-            Console.Write("   ");
+            if(joueurs != null)
+            {
+                int boxWidth = Math.Max(joueurs.Select(x => x.Nom.Length).Max() + joueurs.Select(x => x.Score.ToString().Length).Max() + 7, 12);
+                string boxSeparatorX = Program.RepeatChar('═', boxWidth);
+
+                int xMargin = 45;
+
+                Console.SetCursorPosition(xMargin, 3);
+                Console.Write("╔" + boxSeparatorX + "╗");
+                Console.SetCursorPosition(xMargin, 4);
+                Console.Write("║ Scores :" + Program.RepeatChar(' ', boxWidth - 10) + " ║");
+                Console.SetCursorPosition(xMargin, 5);
+                Console.Write("╠" + boxSeparatorX + "╣");
+
+                for(int i = 0; i < joueurs.Count; i++)
+                {
+                    Console.SetCursorPosition(xMargin, 6 + i);
+
+                    Joueur j = joueurs[i];
+                    bool enCours = j.Nom == joueurEnCours;
+
+                    Console.Write("║ " + (enCours ? "→ " : "") + j.Nom + " : " + j.Score + Program.RepeatChar(' ', boxWidth - j.Nom.Length - (enCours ? 7 : 5) - j.Score.ToString().Length) + " ║");
+                }
+
+                Console.SetCursorPosition(xMargin, 6 + joueurs.Count);
+                Console.Write("╚" + boxSeparatorX + "╝");
+
+                Console.SetCursorPosition(0, 0);
+            }
+
+            string grilleSeparatorX = Program.RepeatChar('═', 5 + poids.GetLength(1)*2);
+            Console.WriteLine("\n  ╔" + grilleSeparatorX + "╗");
+
+            Console.Write("  ║");
             for(int i = 1; i <= poids.GetLength(1); i+=2)
             {
-                Console.Write((i <= 11 ? " " : "") + i + "  ");
+                Console.Write("  " + (i <= 11 ? " " : "") + i);
             }
-            Console.WriteLine();
+            Console.WriteLine("  ║");
 
-            Console.Write("     ");
+            Console.Write("  ║  ");
             for (int i = 2; i <= poids.GetLength(1); i += 2)
             {
-                Console.Write((i <= 10 ? " " : "") + i + "  ");
+                Console.Write("  " + (i <= 11 ? " " : "") + i);
             }
-            Console.WriteLine();
+            Console.WriteLine("    ║");
 
             for (int y = 0; y < poids.GetLength(0); y++)
             {
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.Gray;
 
-                Console.Write((y < 9 ? "  " : " ") + (y + 1) + " ");
+                Console.Write("  ║ " + (y < 9 ? " " : "") + (y + 1) + " ");
 
                 for(int x = 0; x < poids.GetLength(1); x++)
                 {
@@ -174,11 +210,12 @@ namespace A2_POO_Scrabble
                     }
                 }
 
-                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.WriteLine(" ║");
             }
 
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.BackgroundColor = ConsoleColor.Black;
+            Console.WriteLine("  ╚" + grilleSeparatorX + "╝");
         }
 
         /// <summary>
@@ -258,27 +295,31 @@ namespace A2_POO_Scrabble
 
                 char actuel = grille[ligne, colonne]?.Lettre ?? '\0';
                 char dansMot = mot[i];
-                if (actuel == '\0') requiredChars.Add(dansMot);
-                else if (actuel == dansMot) hasCommonLetter = true;
-                else return false;
+                if (actuel == '\0')
+                {
+                    requiredChars.Add(dansMot);
 
-                string nouveau = "";
-                if(dx == 0) // mot vertical, donc on check sur la même ligne
-                {
-                    nouveau = MotDepuisPosition(ligne, colonne, 'L', dansMot);
-                } else // mot horizontal
-                {
-                    nouveau = MotDepuisPosition(ligne, colonne, 'C', dansMot);
-                }
-
-                if (nouveau.Length > 1)
-                {
-                    autresMots.Add(nouveau);
-                    foreach(char c in nouveau)
+                    string nouveau = "";
+                    if (dx == 0) // mot vertical, donc on check sur la même ligne
                     {
-                        score += new Jeton(c).Score;
+                        nouveau = MotDepuisPosition(ligne, colonne, 'L', dansMot);
+                    }
+                    else // mot horizontal
+                    {
+                        nouveau = MotDepuisPosition(ligne, colonne, 'C', dansMot);
+                    }
+
+                    if (nouveau.Length > 1)
+                    {
+                        autresMots.Add(nouveau);
+                        foreach (char c in nouveau)
+                        {
+                            score += new Jeton(c).Score;
+                        }
                     }
                 }
+                else if (actuel == dansMot) hasCommonLetter = true;
+                else return false;
 
                 ligne += dy;
                 colonne += dx;

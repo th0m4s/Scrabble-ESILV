@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace A2_POO_Scrabble
 {
@@ -17,9 +18,7 @@ namespace A2_POO_Scrabble
             for (int i = 0; i < margin_y; i++)
                 Console.WriteLine();
 
-            string margin = "";
-            for (int i = 0; i < margin_x; i++)
-                margin += " ";
+            string margin = RepeatChar(' ', margin_x);
 
             Console.WriteLine(margin + "███████╗ ██████╗██████╗  █████╗ ██████╗ ██████╗ ██╗     ███████╗");
             Console.WriteLine(margin + "██╔════╝██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔══██╗██║     ██╔════╝");
@@ -32,6 +31,11 @@ namespace A2_POO_Scrabble
 
             Console.ReadKey();
             Console.Clear();
+        }
+
+        internal static string RepeatChar(char c, int count)
+        {
+            return string.Join("", Enumerable.Range(0, count).Select(x => c));
         }
 
         static void Main(string[] args)

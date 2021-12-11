@@ -98,7 +98,7 @@ namespace A2_POO_Scrabble
         private void AfficherTour(int tour, string nom = null)
         {
             Console.Clear();
-            plateau.Afficher();
+            plateau.Afficher(joueurs, nom);
 
             if(nom != null)
                 Console.WriteLine("\nTour n°" + tour + ", c'est à " + nom + " de jouer !");
