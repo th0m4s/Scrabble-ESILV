@@ -6,6 +6,9 @@ namespace A2_POO_Scrabble
 {
     class Program
     {
+        /// <summary>
+        /// Affiche le titre du jeu et attend une confirmation avant de commencer.
+        /// </summary>
         static void AfficherTitre()
         {
             int margin_x = (Console.WindowWidth - 64) / 2;

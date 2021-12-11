@@ -21,6 +21,10 @@ namespace A2_POO_Scrabble
         public string Nom => nom;
         public int Score => score;
 
+        /// <summary>
+        /// Créé un joueur à partir d'un nom. Tous les autres champs sont remplis par défaut.
+        /// </summary>
+        /// <param name="nom"></param>
         public Joueur(string nom)
         {
             this.nom = nom;
@@ -30,6 +34,11 @@ namespace A2_POO_Scrabble
             this.mainCourante = new List<Jeton>();
         }
 
+        /// <summary>
+        /// Créé un joueur à partir de 3 lignes de sauvegarde provenant d'un fichier.
+        /// Sur la 1re ligne doit se trouver le nom, le score et le nombre de tours joués, sur la 2e les mots et la 3e les jetons dans sa main.
+        /// </summary>
+        /// <param name="lignes">Les lignes provenant du fichier de sauvegarde.</param>
         public Joueur(string[] lignes)
         {
             string[][] parts = lignes.Select(x => x.Split(";")).ToArray();
@@ -48,42 +57,76 @@ namespace A2_POO_Scrabble
                 + "\nJetons courants : \n" + string.Join("\n", mainCourante.Select(j => "  - " + j.ToString()));
         }
 
+        /// <summary>
+        /// Ajoute un mot à la liste des mots trouvés.
+        /// </summary>
+        /// <param name="mot">Le mot à ajouter.</param>
         public void Add_Mot(string mot)
         {
             motsTrouves.Add(mot);
         }
 
+        /// <summary>
+        /// Ajoute des points au score du joueur.
+        /// </summary>
+        /// <param name="val">Le nombre de points à ajouter. Doit être positif.</param>
         public void Add_Score(int val)
         {
             if (val > 0)
                 score += val;
         }
 
+        /// <summary>
+        /// Compte le nombre de fois qu'une lettre est présente dans la main du joueur.
+        /// </summary>
+        /// <param name="lettre">La lettre à compter.</param>
+        /// <returns>Le nombre de fois que cette lettre est présente.</returns>
         public int Nombre_Lettre(char lettre)
         {
             return mainCourante.Where(x => x == lettre).Count();
         }
 
+        /// <summary>
+        /// Retourne le nombre complet de jetons dans la main du joueur.
+        /// </summary>
+        /// <returns>Le nombre de jetons dans la main du joueur.</returns>
         public int Nombre_Jetons()
         {
             return mainCourante.Count;
         }
 
+        /// <summary>
+        /// Ajoute un jeton dans la main du joueur.
+        /// </summary>
+        /// <param name="monjeton">Le jeton à ajouter dans la main du joueur.</param>
         public void Add_Main_Courante(Jeton monjeton)
         {
             mainCourante.Add(monjeton);
         }
 
+        /// <summary>
+        /// Retire un jeton de la main du joueur.
+        /// </summary>
+        /// <param name="monjeton">Le jeton à retirer de la main.</param>
         public void Remove_Main_Courante(Jeton monjeton)
         {
             mainCourante.Remove(monjeton);
         }
 
+        /// <summary>
+        /// Retire un jeton de la main du joueur à partir de la lettre qu'il représente.
+        /// </summary>
+        /// <param name="lettre">La lettre du jeton à retirer.</param>
         public void Remove_Main_Courante(char lettre)
         {
             Remove_Main_Courante(new Jeton(lettre));
         }
 
+        /// <summary>
+        /// Remplace tous les jetons de la main d'un joueur.
+        /// </summary>
+        /// <param name="sac">Le sac de jetons dans quel remettre les jetons et en reprendre.</param>
+        /// <param name="random">L'instance de Random servant à piocher les jetons.</param>
         public void Remplacer_Jetons(Sac_Jetons sac, Random random)
         {
             int nb = mainCourante.Count;
@@ -97,6 +140,9 @@ namespace A2_POO_Scrabble
                 mainCourante.Add(sac.Retire_Jeton(random));
         }
 
+        /// <summary>
+        /// Affiche avec des couleurs tous les jetons dans la main d'un joueur sur la Console.
+        /// </summary>
         public void AfficherMain()
         {
             foreach(Jeton j in mainCourante)
@@ -113,6 +159,11 @@ namespace A2_POO_Scrabble
             }
         }
 
+        /// <summary>
+        /// Renvoie les 3 lignes qui servent à la sauvegarde d'un joueur dans un fichier texte.
+        /// Voir le constructeur pour les détails sur le contenu de ces 3 lignes.
+        /// </summary>
+        /// <returns>Les 3 lignes représentant le joueur.</returns>
         public string[] Sauvegarder()
         {
             return new string[] {
@@ -120,6 +171,12 @@ namespace A2_POO_Scrabble
             };
         }
 
+        /// <summary>
+        /// Permet de transformer les lignes d'un fichier de sauvegarde en une liste de joueurs.
+        /// Chaque trio de ligne est transformé en joueur via le constructeur.
+        /// </summary>
+        /// <param name="lignes">Les lignes du fichier de sauvegarde.</param>
+        /// <returns>La liste des joueurs contenus dans la sauvegarde.</returns>
         public static List<Joueur> ChargerJoueurs(string[] lignes)
         {
             List<string> _lignes = lignes.Select(x => x.Trim()).Where(x => x.Length > 0).ToList();

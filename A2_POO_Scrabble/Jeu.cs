@@ -33,6 +33,13 @@ namespace A2_POO_Scrabble
 
         Random random;
 
+        /// <summary>
+        /// Créé une instance jeu à partir des données d'un dictionnaire, plateau, sac et d'une liste de joueurs pouvant être nulle.
+        /// </summary>
+        /// <param name="dictionnaire">Le dictionnaire contenant les mots autorisés pour la partie.</param>
+        /// <param name="plateau">Le plateau de jeu au début de la partie.</param>
+        /// <param name="sacJetons">Le sac de jetons encore disponibles.</param>
+        /// <param name="joueurs">La liste des joueurs ou null si les joueurs doivent être demandés au début du jeu.</param>
         public Jeu(Dictionnaire dictionnaire, Plateau plateau, Sac_Jetons sacJetons, List<Joueur> joueurs = null)
         {
             this.dictionnaire = dictionnaire;
@@ -43,6 +50,9 @@ namespace A2_POO_Scrabble
             this.random = new Random();
         }
 
+        /// <summary>
+        /// Permet de remplir la liste des joueurs si une nouvelle partie est commencée.
+        /// </summary>
         public void DemanderJoueurs()
         {
             int nb = -1;
@@ -80,6 +90,11 @@ namespace A2_POO_Scrabble
             }
         }
 
+        /// <summary>
+        /// Affiche la grille ainsi que le numéro du tour et le nom du joueur qui doit jouer.
+        /// </summary>
+        /// <param name="tour">Le numéro du tour en cours.</param>
+        /// <param name="nom">Le nom du joueur qui doit jouer.</param>
         private void AfficherTour(int tour, string nom = null)
         {
             Console.Clear();
@@ -89,6 +104,10 @@ namespace A2_POO_Scrabble
                 Console.WriteLine("\nTour n°" + tour + ", c'est à " + nom + " de jouer !");
         }
 
+        /// <summary>
+        /// Sauvegarde la liste des joueurs (dont leur score, mots et jetons) dans un fichier.
+        /// </summary>
+        /// <param name="fichier">Le nom du fichier à sauvegarder.</param>
         public void SauvegarderJoueurs(string fichier)
         {
             List<string> lignes = new List<string>();
@@ -97,6 +116,10 @@ namespace A2_POO_Scrabble
             File.WriteAllLines(fichier, lignes);
         }
 
+        /// <summary>
+        /// Fonction principale s'apparentant au Main, contient toute la boucle de jeu.
+        /// Cette méthode demande à tour de rôle quel mot placer sur la grille jusqu'à qu'il n'y ait plus de jetons dans le sac.
+        /// </summary>
         public void Jouer()
         {
             if (joueurs == null) return;

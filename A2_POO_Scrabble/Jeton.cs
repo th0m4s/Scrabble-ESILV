@@ -8,12 +8,22 @@
         public char Lettre => lettre;
         public int Score => score;
 
+        /// <summary>
+        /// Créé un jeton à partir de la lettre qu'il représente ainsi que son score.
+        /// </summary>
+        /// <param name="lettre">La lettre du jeton.</param>
+        /// <param name="score">Le score attribué si ce jeton est joué.</param>
         public Jeton(char lettre, int score)
         {
             this.lettre = lettre;
             this.score = score;
         }
 
+        /// <summary>
+        /// Créé un jeton à partir de la lettre qu'il représente.
+        /// Le score est automatiquement récupéré à partir des autres jetons chargés dans le sac de jetons.
+        /// </summary>
+        /// <param name="lettre">La lettre du jeton.</param>
         public Jeton(char lettre) : this(lettre, 0)
         {
             this.score = Sac_Jetons.Score_Pour_Lettre(lettre);
