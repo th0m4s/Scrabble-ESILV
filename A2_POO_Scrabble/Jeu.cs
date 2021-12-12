@@ -58,9 +58,7 @@ namespace A2_POO_Scrabble
             int nb = -1;
             while(nb < 2 || nb > 4)
             {
-                Console.Clear();
-                Console.Write("Combien de joueurs vont jouer ? (entre 2 et 4) ");
-                int.TryParse(Console.ReadLine(), out nb);
+                int.TryParse(Program.PoserQuestionLarge("Combien de joueurs vont jouer ? (entre 2 et 4)"), out nb);
             }
 
             joueurs = new List<Joueur>();
@@ -71,12 +69,7 @@ namespace A2_POO_Scrabble
 
                 do
                 {
-                    Console.Clear();
-                    if (nom != null)
-                        Console.WriteLine("Ce nom est déjà utilisé !");
-                    Console.Write("Entrez le nom du joueur " + (i + 1) + " : ");
-
-                    nom = Console.ReadLine();
+                    nom = Program.PoserQuestionLarge((nom != null ? "Ce nom est déjà utilisé !\n" : "") + "Entrez le nom du joueur " + (i+1) + " :");
 
                     if (nom.Trim().Length == 0) nom = null;
                     else if (joueurs.Where(j => j.Nom == nom).Count() > 0) nom = "";
@@ -117,7 +110,7 @@ namespace A2_POO_Scrabble
 
 
                 string[] lines = message.Split('\n');
-                string emptyLine = Program.RepeatChar(' ', boxWidth - 2);
+                string emptyLine = "║" + Program.RepeatChar(' ', boxWidth - 2) + "║";
 
                 for(int i = 0; i < 4; i++)
                 {
@@ -128,7 +121,7 @@ namespace A2_POO_Scrabble
                         string line = lines[i];
                         Console.Write("║ " + line + Program.RepeatChar(' ', boxWidth - line.Length - 3) + "║");
                     }
-                    else Console.Write("║" + emptyLine + "║");
+                    else Console.Write(emptyLine);
                 }
 
                 Console.SetCursorPosition(messageStartX, messageStartY + 5); // border bottom
