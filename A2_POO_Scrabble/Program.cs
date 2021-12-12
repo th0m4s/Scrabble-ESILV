@@ -17,6 +17,11 @@ namespace A2_POO_Scrabble
             "╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚══════╝╚══════╝"
         };
 
+        /// <summary>
+        /// Affiche <b>une ligne</b> du titre avec les bonnes couleurs et marges.
+        /// </summary>
+        /// <param name="margin">La marge à côté du titre.</param>
+        /// <param name="ligne">La ligne du titre à afficher.</param>
         private static void AfficherLigneTitre(string margin, string ligne)
         {
             Console.Write(margin);
@@ -36,6 +41,7 @@ namespace A2_POO_Scrabble
             Console.BackgroundColor = ConsoleColor.DarkGreen;
             Console.ForegroundColor = ConsoleColor.White;
             Console.Clear(); // mettre toute la console en vert
+            
 
             int margin_x = (Console.WindowWidth - 64) / 2 - 4;
             int margin_y = (Console.WindowHeight - LOGO.Length * 2) / 2;
@@ -43,8 +49,8 @@ namespace A2_POO_Scrabble
             for (int i = 0; i < margin_y; i++)
                 Console.WriteLine();
 
-            string margin = RepeatChar(' ', margin_x);
-            string empty = RepeatChar(' ', 64);
+            string margin = Utils.RepeatChar(' ', margin_x);
+            string empty = Utils.RepeatChar(' ', 64);
 
             AfficherLigneTitre(margin, empty);
             foreach (string ligne in LOGO)
@@ -57,62 +63,6 @@ namespace A2_POO_Scrabble
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.Clear();
-        }
-
-        internal static string RepeatChar(char c, int count)
-        {
-            return string.Join("", Enumerable.Range(0, count).Select(x => c));
-        }
-
-        internal static string PoserQuestionLarge(string question, string below = "")
-        {
-            Console.Clear();
-
-            int questionStartY = 1;
-            int questionStartX = 2;
-
-            int boxWidth = Console.WindowWidth - 2 * questionStartX;
-            string xBorder = Program.RepeatChar('═', boxWidth - 2);
-
-            Console.SetCursorPosition(questionStartX, questionStartY); // border top
-            Console.Write("╔" + xBorder + "╗");
-
-            string[] lignes = question.Split('\n');
-            for (int i = 0; i < lignes.Length; i++)
-            {
-                Console.SetCursorPosition(questionStartX, questionStartY + 1 + i);
-
-                string ligne = lignes[i];
-                Console.Write("║ " + ligne + Program.RepeatChar(' ', boxWidth - 3 - ligne.Length) + "║");
-            }
-
-            int repStartY = questionStartY + 1 + lignes.Length;
-            Console.SetCursorPosition(questionStartX, repStartY);
-            string emptyLine = "║" + Program.RepeatChar(' ', boxWidth - 2) + "║";
-            Console.Write(emptyLine);
-
-            int heightBelow = 0;
-            if (below != null && below.Trim().Length > 0)
-            {
-                string[] lignesBelow = below.Split('\n');
-                heightBelow = 1 + lignesBelow.Length;
-
-                Console.SetCursorPosition(questionStartX, repStartY + 1);
-                Console.Write(emptyLine);
-
-                for (int i = 0; i < lignesBelow.Length; i++)
-                {
-                    string ligne = lignesBelow[i];
-                    Console.SetCursorPosition(questionStartX, repStartY + 2 + i);
-                    Console.Write("║ " + ligne + Program.RepeatChar(' ', boxWidth - 3 - ligne.Length) + "║");
-                }
-            }
-
-            Console.SetCursorPosition(questionStartX, repStartY + 1 + heightBelow);
-            Console.Write("╚" + xBorder + "╝");
-
-            Console.SetCursorPosition(questionStartX + 2, repStartY);
-            return Console.ReadLine();
         }
 
         static void Main(string[] args)
@@ -134,7 +84,7 @@ namespace A2_POO_Scrabble
 
             if (File.Exists("InstancePlateau.txt") && File.Exists("InstanceJetons.txt") && File.Exists("Joueurs.txt"))
             {
-                string reponse = PoserQuestionLarge("Une partie en cours n'a pas été terminée lors de dernière exécution du programme.\n"
+                string reponse = Utils.PoserQuestionLarge("Une partie en cours n'a pas été terminée lors de dernière exécution du programme.\n"
                     + "Entrez o/oui ou y/yes pour continuer cette partie, autre chose pour en commencer une nouvelle :", "/!\\ Attention, commencer une nouvelle partie supprimera les données de la partie en cours !").Trim().ToUpper();
                 if(reponse == "O" || reponse == "OUI" || reponse == "Y" || reponse == "YES")
                 {

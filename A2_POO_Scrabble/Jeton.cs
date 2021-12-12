@@ -34,9 +34,13 @@
             return "Jeton '" + lettre + "' (" + score + " point" + (score <= 1 ? "" : "s") + ")";
         }
 
+        /// <summary>
+        /// Retourne une valeur représentant un jeton de façon unique.
+        /// </summary>
+        /// <returns>L'entier représentant la lettre et le score du jeton.</returns>
         public override int GetHashCode()
         {
-            return lettre << 4 + score;
+            return lettre << 16 + score;
         }
 
         public override bool Equals(object obj)

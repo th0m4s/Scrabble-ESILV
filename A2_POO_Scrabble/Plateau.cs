@@ -25,7 +25,7 @@ namespace A2_POO_Scrabble
         Jeton[,] grille;
 
         /// <summary>
-        /// Construis la grille des poids à partir d'un quart (le supérieur gauche) de la grille.
+        /// Construit la grille des poids à partir d'un quart (le supérieur gauche) de la grille.
         /// </summary>
         static void VerifierPoids()
         {
@@ -77,7 +77,7 @@ namespace A2_POO_Scrabble
                     {
                         string part = parts[j];
                         if (part.Length == 1 && part[0] != '_') grille[i, j] = new Jeton(part[0]);
-                        else if (part.Length == 2 && part[2] == '*') new Jeton(part[0], 0);
+                        else if (part.Length == 2 && part[1] == '*') grille[i, j] = new Jeton(part[0], 0);
                     }
                 }
             }
@@ -111,7 +111,7 @@ namespace A2_POO_Scrabble
         /// </summary>
         public void Afficher()
         {
-            string grilleSeparatorX = Program.RepeatChar('═', 5 + poids.GetLength(1)*2);
+            string grilleSeparatorX = Utils.RepeatChar('═', 5 + poids.GetLength(1)*2);
             Console.WriteLine("\n  ╔" + grilleSeparatorX + "╗");
 
             Console.Write("  ║ ");
@@ -194,6 +194,12 @@ namespace A2_POO_Scrabble
             Console.WriteLine("  ╚" + grilleSeparatorX + "╝");
         }
 
+        /// <summary>
+        /// Affiche une ligne de la légende sous le plateau.
+        /// </summary>
+        /// <param name="color">La couleur de la zone.</param>
+        /// <param name="legende">Le texte correspondant à cette couleur.</param>
+        /// <param name="length">La largeur de la zone contenant les légendes.</param>
         private void AfficherLigneLegende(ConsoleColor color, string legende, int length)
         {
             Console.Write("  ║ ");
@@ -202,7 +208,7 @@ namespace A2_POO_Scrabble
             Console.Write("  ");
 
             Console.BackgroundColor = ConsoleColor.Black;
-            Console.WriteLine(" " + legende + Program.RepeatChar(' ', length - 4 - legende.Length) + "║");
+            Console.WriteLine(" " + legende + Utils.RepeatChar(' ', length - 4 - legende.Length) + "║");
         }
 
         /// <summary>
