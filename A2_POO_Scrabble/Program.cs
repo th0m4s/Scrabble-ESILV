@@ -12,6 +12,8 @@ namespace A2_POO_Scrabble
         /// </summary>
         static void AfficherTitre()
         {
+            Console.Title = "Scrabble";
+
             int margin_x = (Console.WindowWidth - 64) / 2;
             int margin_y = (Console.WindowHeight - 12) / 2;
 
