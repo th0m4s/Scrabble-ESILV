@@ -7,6 +7,16 @@ namespace A2_POO_Scrabble
 {
     class Program
     {
+        public static string[] LOGO => new string[]
+        {
+            "███████╗ ██████╗██████╗  █████╗ ██████╗ ██████╗ ██╗     ███████╗",
+            "██╔════╝██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔══██╗██║     ██╔════╝",
+            "███████╗██║     ██████╔╝███████║██████╔╝██████╔╝██║     █████╗  ",
+            "╚════██║██║     ██╔══██╗██╔══██║██╔══██╗██╔══██╗██║     ██╔══╝  ",
+            "███████║╚██████╗██║  ██║██║  ██║██████╔╝██████╔╝███████╗███████╗",
+            "╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚══════╝╚══════╝"
+        };
+
         private static void AfficherLigneTitre(string margin, string ligne)
         {
             Console.Write(margin);
@@ -28,7 +38,7 @@ namespace A2_POO_Scrabble
             Console.Clear(); // mettre toute la console en vert
 
             int margin_x = (Console.WindowWidth - 64) / 2 - 4;
-            int margin_y = (Console.WindowHeight - 12) / 2;
+            int margin_y = (Console.WindowHeight - LOGO.Length * 2) / 2;
 
             for (int i = 0; i < margin_y; i++)
                 Console.WriteLine();
@@ -37,12 +47,8 @@ namespace A2_POO_Scrabble
             string empty = RepeatChar(' ', 64);
 
             AfficherLigneTitre(margin, empty);
-            AfficherLigneTitre(margin, "███████╗ ██████╗██████╗  █████╗ ██████╗ ██████╗ ██╗     ███████╗");
-            AfficherLigneTitre(margin, "██╔════╝██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔══██╗██║     ██╔════╝");
-            AfficherLigneTitre(margin, "███████╗██║     ██████╔╝███████║██████╔╝██████╔╝██║     █████╗  ");
-            AfficherLigneTitre(margin, "╚════██║██║     ██╔══██╗██╔══██║██╔══██╗██╔══██╗██║     ██╔══╝  ");
-            AfficherLigneTitre(margin, "███████║╚██████╗██║  ██║██║  ██║██████╔╝██████╔╝███████╗███████╗");
-            AfficherLigneTitre(margin, "╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚══════╝╚══════╝");
+            foreach (string ligne in LOGO)
+                AfficherLigneTitre(margin, ligne);
             AfficherLigneTitre(margin, empty);
 
             Console.Write("\n\n" + margin + "                Appuyez sur une touche pour commencer...");

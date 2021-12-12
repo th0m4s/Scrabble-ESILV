@@ -182,7 +182,27 @@ namespace A2_POO_Scrabble
                 Console.WriteLine(" ║");
             }
 
+            Console.WriteLine("  ╠" + grilleSeparatorX + "╣");
+
+            int lineLength = grilleSeparatorX.Length;
+
+            AfficherLigneLegende(ConsoleColor.Cyan, "Lettre compte double", lineLength);
+            AfficherLigneLegende(ConsoleColor.Blue, "Lettre compte triple", lineLength);
+            AfficherLigneLegende(ConsoleColor.Magenta, "Mot compte double", lineLength);
+            AfficherLigneLegende(ConsoleColor.Red, "Mot compte triple", lineLength);
+
             Console.WriteLine("  ╚" + grilleSeparatorX + "╝");
+        }
+
+        private void AfficherLigneLegende(ConsoleColor color, string legende, int length)
+        {
+            Console.Write("  ║ ");
+
+            Console.BackgroundColor = color;
+            Console.Write("  ");
+
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.WriteLine(" " + legende + Program.RepeatChar(' ', length - 4 - legende.Length) + "║");
         }
 
         /// <summary>

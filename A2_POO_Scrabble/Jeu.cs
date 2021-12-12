@@ -84,6 +84,7 @@ namespace A2_POO_Scrabble
         }
 
         const int interfaceLeftMargin = 43;
+        const int interfaceTopMargin = 10;
 
         /// <summary>
         /// Affiche l'interface de jeu.
@@ -97,9 +98,19 @@ namespace A2_POO_Scrabble
             plateau.Afficher();
             int scoresWidth = AfficherScores(joueurEnCours);
 
+            string[] logo = Program.LOGO;
+            int logoStartX = interfaceLeftMargin + (Console.WindowWidth - interfaceLeftMargin - logo[0].Length) / 2 - 1;
+            for(int i = 0; i < logo.Length; i++)
+            {
+                string ligne = logo[i];
+
+                Console.SetCursorPosition(logoStartX, 2 + i);
+                Console.Write(ligne);
+            }
+
             if(message != null)
             {
-                int messageStartY = 3;
+                int messageStartY = interfaceTopMargin;
                 int messageStartX = interfaceLeftMargin + scoresWidth + 5;
 
                 int boxWidth = Console.WindowWidth - messageStartX - 4;
@@ -135,7 +146,7 @@ namespace A2_POO_Scrabble
 
         private string PoserQuestion(string question)
         {
-            int questionStartY = 8 + joueurs.Count;
+            int questionStartY = interfaceTopMargin + 5 + joueurs.Count;
             int boxWidth = Console.WindowWidth - interfaceLeftMargin - 4;
 
             string xBorder = Program.RepeatChar('═', boxWidth - 2);
@@ -176,16 +187,18 @@ namespace A2_POO_Scrabble
             int boxWidth = Math.Max(joueurs.Select(x => x.Nom.Length).Max() + joueurs.Select(x => x.Score.ToString().Length).Max() + 7, 12);
             string boxSeparatorX = Program.RepeatChar('═', boxWidth);
 
-            Console.SetCursorPosition(interfaceLeftMargin, 3);
+            int scoreStartY = interfaceTopMargin;
+
+            Console.SetCursorPosition(interfaceLeftMargin, scoreStartY);
             Console.Write("╔" + boxSeparatorX + "╗");
-            Console.SetCursorPosition(interfaceLeftMargin, 4);
+            Console.SetCursorPosition(interfaceLeftMargin, scoreStartY + 1);
             Console.Write("║ Scores :" + Program.RepeatChar(' ', boxWidth - 10) + " ║");
-            Console.SetCursorPosition(interfaceLeftMargin, 5);
+            Console.SetCursorPosition(interfaceLeftMargin, scoreStartY + 2);
             Console.Write("╠" + boxSeparatorX + "╣");
 
             for (int i = 0; i < joueurs.Count; i++)
             {
-                Console.SetCursorPosition(interfaceLeftMargin, 6 + i);
+                Console.SetCursorPosition(interfaceLeftMargin, scoreStartY + 3 + i);
 
                 Joueur j = joueurs[i];
                 bool enCours = j.Nom == joueurEnCours;
@@ -193,7 +206,7 @@ namespace A2_POO_Scrabble
                 Console.Write("║ " + (enCours ? "→ " : "") + j.Nom + " : " + j.Score + Program.RepeatChar(' ', boxWidth - j.Nom.Length - (enCours ? 7 : 5) - j.Score.ToString().Length) + " ║");
             }
 
-            Console.SetCursorPosition(interfaceLeftMargin, 6 + joueurs.Count);
+            Console.SetCursorPosition(interfaceLeftMargin, scoreStartY + 3 + joueurs.Count);
             Console.Write("╚" + boxSeparatorX + "╝");
 
             return boxWidth;
@@ -278,7 +291,7 @@ namespace A2_POO_Scrabble
                                     motPlace = false;
 
                                     // a cause des jetons le curseur est mal placé
-                                    Console.SetCursorPosition(xBeforeMain - 3, 7);
+                                    Console.SetCursorPosition(xBeforeMain - 3, interfaceTopMargin + 4);
 
                                     break;
                                 }
