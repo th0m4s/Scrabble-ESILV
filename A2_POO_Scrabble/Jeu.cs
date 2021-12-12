@@ -69,10 +69,10 @@ namespace A2_POO_Scrabble
 
                 do
                 {
-                    nom = Utils.PoserQuestionLarge((nom != null ? "Ce nom est déjà utilisé !\n" : "") + "Entrez le nom du joueur " + (i+1) + " :");
+                    nom = Utils.PoserQuestionLarge((nom != null ? "Ce nom est déjà utilisé !\n" : "") + "Entrez le nom du joueur " + (i+1) + " :").Trim();
 
-                    if (nom.Trim().Length == 0) nom = null;
-                    else if (joueurs.Where(j => j.Nom == nom).Count() > 0) nom = "";
+                    if (nom.Length == 0) nom = null;
+                    else if (nom.Length > 14 || joueurs.Where(j => j.Nom == nom).Count() > 0) nom = "";
                 } while (nom == null || nom.Length == 0);
 
                 Joueur joueur = new Joueur(nom);
@@ -296,7 +296,7 @@ namespace A2_POO_Scrabble
                     if(tourFini && motPlace)
                         AfficherInterface(joueur.Nom, "Tu as maintenant un score de " + joueur.Score + " !\n");
 
-                    while (joueur.Nombre_Jetons() < 7)
+                    while (joueur.Nombre_Jetons() < 7 && sacJetons.NombreJetons() > 0)
                         joueur.Add_Main_Courante(sacJetons.Retire_Jeton(random));
 
                     plateau.SauvegarderPlateau("InstancePlateau.txt");
