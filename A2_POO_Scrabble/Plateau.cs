@@ -67,8 +67,8 @@ namespace A2_POO_Scrabble
             VerifierPoids();
             int nb_lignes = poids.GetLength(0), nb_col = poids.GetLength(1);
             grille = new Jeton[nb_lignes, nb_col];
-            
-            if(lignes.Length != nb_lignes)
+
+            if (lignes.Select(x => x.Trim().Length > 0).Count() == nb_lignes)
             {
                 for(int i = 0; i < nb_lignes; i++)
                 {
@@ -108,58 +108,25 @@ namespace A2_POO_Scrabble
 
         /// <summary>
         /// Affiche la grille, les poids et jetons placés sur la Console en utilisant des couleurs.
-        /// Si joueurs est fourni, affiche les scores des joueurs à droite de la grille.
         /// </summary>
-        /// <param name="joueurs">La liste des joueurs.</param>
-        /// <param name="joueurEnCours">Le nom du joueur en cours.</param>
-        public void Afficher(List<Joueur> joueurs = null, string joueurEnCours = null)
+        public void Afficher()
         {
-            if(joueurs != null)
-            {
-                int boxWidth = Math.Max(joueurs.Select(x => x.Nom.Length).Max() + joueurs.Select(x => x.Score.ToString().Length).Max() + 7, 12);
-                string boxSeparatorX = Program.RepeatChar('═', boxWidth);
-
-                int xMargin = 45;
-
-                Console.SetCursorPosition(xMargin, 3);
-                Console.Write("╔" + boxSeparatorX + "╗");
-                Console.SetCursorPosition(xMargin, 4);
-                Console.Write("║ Scores :" + Program.RepeatChar(' ', boxWidth - 10) + " ║");
-                Console.SetCursorPosition(xMargin, 5);
-                Console.Write("╠" + boxSeparatorX + "╣");
-
-                for(int i = 0; i < joueurs.Count; i++)
-                {
-                    Console.SetCursorPosition(xMargin, 6 + i);
-
-                    Joueur j = joueurs[i];
-                    bool enCours = j.Nom == joueurEnCours;
-
-                    Console.Write("║ " + (enCours ? "→ " : "") + j.Nom + " : " + j.Score + Program.RepeatChar(' ', boxWidth - j.Nom.Length - (enCours ? 7 : 5) - j.Score.ToString().Length) + " ║");
-                }
-
-                Console.SetCursorPosition(xMargin, 6 + joueurs.Count);
-                Console.Write("╚" + boxSeparatorX + "╝");
-
-                Console.SetCursorPosition(0, 0);
-            }
-
             string grilleSeparatorX = Program.RepeatChar('═', 5 + poids.GetLength(1)*2);
             Console.WriteLine("\n  ╔" + grilleSeparatorX + "╗");
 
-            Console.Write("  ║");
+            Console.Write("  ║ ");
             for(int i = 1; i <= poids.GetLength(1); i+=2)
             {
                 Console.Write("  " + (i <= 11 ? " " : "") + i);
             }
-            Console.WriteLine("  ║");
+            Console.WriteLine(" ║");
 
-            Console.Write("  ║  ");
+            Console.Write("  ║   ");
             for (int i = 2; i <= poids.GetLength(1); i += 2)
             {
                 Console.Write("  " + (i <= 11 ? " " : "") + i);
             }
-            Console.WriteLine("    ║");
+            Console.WriteLine("   ║");
 
             for (int y = 0; y < poids.GetLength(0); y++)
             {

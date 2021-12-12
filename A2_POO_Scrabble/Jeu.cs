@@ -90,18 +90,120 @@ namespace A2_POO_Scrabble
             }
         }
 
+        const int interfaceLeftMargin = 43;
+
         /// <summary>
-        /// Affiche la grille ainsi que le numéro du tour et le nom du joueur qui doit jouer.
+        /// Affiche l'interface de jeu.
         /// </summary>
-        /// <param name="tour">Le numéro du tour en cours.</param>
-        /// <param name="nom">Le nom du joueur qui doit jouer.</param>
-        private void AfficherTour(int tour, string nom = null)
+        /// <param name="joueurEnCours">Le joueur en cours.</param>
+        /// <param name="message">Le message a afficher en haut à droite des scores.</param>
+        private void AfficherInterface(string joueurEnCours = null, string message = null)
         {
             Console.Clear();
-            plateau.Afficher(joueurs, nom);
 
-            if(nom != null)
-                Console.WriteLine("\nTour n°" + tour + ", c'est à " + nom + " de jouer !");
+            plateau.Afficher();
+            int scoresWidth = AfficherScores(joueurEnCours);
+
+            if(message != null)
+            {
+                int messageStartY = 3;
+                int messageStartX = interfaceLeftMargin + scoresWidth + 5;
+
+                int boxWidth = Console.WindowWidth - messageStartX - 4;
+                string xBorder = Program.RepeatChar('═', boxWidth - 2);
+
+                Console.SetCursorPosition(messageStartX, messageStartY); // border top
+                Console.Write("╔" + xBorder + "╗");
+
+
+                string[] lines = message.Split('\n');
+                string emptyLine = Program.RepeatChar(' ', boxWidth - 2);
+
+                for(int i = 0; i < 4; i++)
+                {
+                    Console.SetCursorPosition(messageStartX, messageStartY + 1 + i); // message line
+
+                    if (i < lines.Length)
+                    {
+                        string line = lines[i];
+                        Console.Write("║ " + line + Program.RepeatChar(' ', boxWidth - line.Length - 3) + "║");
+                    }
+                    else Console.Write("║" + emptyLine + "║");
+                }
+
+                Console.SetCursorPosition(messageStartX, messageStartY + 5); // border bottom
+                Console.Write("╚" + xBorder + "╝");
+
+                if (lines.Length == 0)
+                    Console.SetCursorPosition(messageStartX + 2, messageStartY + 1);
+                else Console.SetCursorPosition(messageStartX + 2 + lines[lines.Length - 1].Length, messageStartY + lines.Length);
+            }
+        }
+
+        private string PoserQuestion(string question)
+        {
+            int questionStartY = 8 + joueurs.Count;
+            int boxWidth = Console.WindowWidth - interfaceLeftMargin - 4;
+
+            string xBorder = Program.RepeatChar('═', boxWidth - 2);
+
+            Console.SetCursorPosition(interfaceLeftMargin, questionStartY); // border top
+            Console.Write("╔" + xBorder + "╗");
+
+            string[] lines = question.Split('\n');
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Console.SetCursorPosition(interfaceLeftMargin, questionStartY + 1 + i); // question line
+
+                string line = lines[i];
+                Console.Write("║ " + line + Program.RepeatChar(' ', boxWidth - line.Length - 3) + "║");
+            }
+
+            string emptyLine = Program.RepeatChar(' ', boxWidth - 2);
+            Console.SetCursorPosition(interfaceLeftMargin, questionStartY + 1 + lines.Length); // response line
+            Console.Write("║" + emptyLine + "║");
+
+            Console.SetCursorPosition(interfaceLeftMargin, questionStartY + 2 + lines.Length); // border bottom
+            Console.Write("╚" + xBorder + "╝");
+
+            // clear remaining lines from old question
+            for (int i = 3 + lines.Length; i < 7; i++)
+            {
+                Console.SetCursorPosition(interfaceLeftMargin, questionStartY + i);
+                Console.Write("  " + emptyLine);
+            }
+
+            Console.SetCursorPosition(interfaceLeftMargin + 2, questionStartY + 1 + lines.Length);
+            return Console.ReadLine().Trim().ToUpper();
+        }
+
+        private int AfficherScores(string joueurEnCours)
+        {
+            int boxWidth = Math.Max(joueurs.Select(x => x.Nom.Length).Max() + joueurs.Select(x => x.Score.ToString().Length).Max() + 7, 12);
+            string boxSeparatorX = Program.RepeatChar('═', boxWidth);
+
+            Console.SetCursorPosition(interfaceLeftMargin, 3);
+            Console.Write("╔" + boxSeparatorX + "╗");
+            Console.SetCursorPosition(interfaceLeftMargin, 4);
+            Console.Write("║ Scores :" + Program.RepeatChar(' ', boxWidth - 10) + " ║");
+            Console.SetCursorPosition(interfaceLeftMargin, 5);
+            Console.Write("╠" + boxSeparatorX + "╣");
+
+            for (int i = 0; i < joueurs.Count; i++)
+            {
+                Console.SetCursorPosition(interfaceLeftMargin, 6 + i);
+
+                Joueur j = joueurs[i];
+                bool enCours = j.Nom == joueurEnCours;
+
+                Console.Write("║ " + (enCours ? "→ " : "") + j.Nom + " : " + j.Score + Program.RepeatChar(' ', boxWidth - j.Nom.Length - (enCours ? 7 : 5) - j.Score.ToString().Length) + " ║");
+            }
+
+            Console.SetCursorPosition(interfaceLeftMargin, 6 + joueurs.Count);
+            Console.Write("╚" + boxSeparatorX + "╝");
+
+            return boxWidth;
         }
 
         /// <summary>
@@ -143,19 +245,18 @@ namespace A2_POO_Scrabble
                     int ligne = -1, colonne = -1;
                     char direction = '\0';
 
-                    AfficherTour(tour, joueur.Nom);
-                    Console.WriteLine("Appuie sur une touche pour voir ta main...");
+                    AfficherInterface(joueur.Nom, "C'est à " + joueur.Nom +" de jouer !\nAppuie sur une touche pour voir ta main...");
                     Console.ReadKey();
 
                     bool motPlace = true;
                     bool tourFini = false;
 
-                    Task task = Task.Delay(60_000).ContinueWith(_ => {
+                    Task task = Task.Delay(90_000).ContinueWith(_ => {
                         if (tourFini) return;
 
                         CancelIoEx(StdHandle, IntPtr.Zero);
 
-                        Task.Delay(100).ContinueWith(_ =>
+                        Task.Delay(0).ContinueWith(_ =>
                         {
                             PostMessage(ConsoleWindowHnd, WM_KEYDOWN, VK_RETURN, 0); // we need to send a return key to "finish" the readline operation that was started
                         });
@@ -165,23 +266,27 @@ namespace A2_POO_Scrabble
                     {
                         do
                         {
-                            AfficherTour(tour, joueur.Nom);
-                            Console.Write("Voici ta main :\n\n   ");
+                            AfficherInterface(joueur.Nom, "Voici ta main :\n\n   ");
                             joueur.AfficherMain();
 
-                            Console.Write("\n\nQuel mot veux tu jouer ? (en incluant les lettres déjà placées)\nN'écris rien pour remplacer tes jetons actuels.\n  ");
-                            mot = Console.ReadLine().ToUpper();
+                            mot = PoserQuestion("Quel mot veux tu jouer ? (en incluant les lettres déjà placées)\nN'écris rien pour remplacer tes jetons actuels.");
 
                             if (mot.Length == 0)
                             {
-                                Console.Write("Veux-tu vraiment remplacer tous tes jetons et passer ton tour ?\n(écris o/oui ou y/yes pour continuer ou autre chose pour annuler)\n  ");
-                                string confirm = Console.ReadLine().Trim().ToUpper();
+                                string confirm = PoserQuestion("Veux-tu vraiment remplacer tous tes jetons et passer ton tour ?\n(écris o/oui ou y/yes pour continuer ou autre chose pour annuler)");
 
                                 if (confirm == "O" || confirm == "OUI" || confirm == "Y" || confirm == "YES")
                                 {
                                     joueur.Remplacer_Jetons(sacJetons, random);
-                                    Console.WriteLine("\nTes jetons ont été remplacés !");
+                                    AfficherInterface(joueur.Nom, "Tes jetons ont été remplacés par :\n   ");
+                                    int xBeforeMain = Console.CursorLeft;
+                                    joueur.AfficherMain();
+
                                     motPlace = false;
+
+                                    // a cause des jetons le curseur est mal placé
+                                    Console.SetCursorPosition(xBeforeMain - 3, 7);
+
                                     break;
                                 }
                                 else continue;
@@ -190,15 +295,13 @@ namespace A2_POO_Scrabble
                             mot = Regex.Replace(mot, "[^A-Z]", "");
                             if (mot.Length == 0) continue;
 
-                            Console.Write("\nA quelle position veux tu jouer ce mot ? (écrire la position de la 1re case - ie. en haut ou à gauche - séparés par un espace, ligne puis colonne :\n  ");
-                            string pos = Console.ReadLine().Trim();
+                            string pos = PoserQuestion("A quelle position veux-tu jouer ce mot ?\n(écrire la position de la 1re case - ie. en haut ou à gauche -\nligne puis colonne séparées par un espace)");
                             string[] posparts = pos.Split(',', ';', ' ', '/');
 
                             if (posparts.Length != 2) continue;
                             if (!int.TryParse(posparts[0], out ligne) || !int.TryParse(posparts[1], out colonne)) continue;
 
-                            Console.Write("\nDans quelle direction veux-tu placer ce mot ? (l/ligne ou c/colonne)\n  ");
-                            string dir = Console.ReadLine().Trim().ToUpper();
+                            string dir = PoserQuestion("Dans quelle direction veux-tu placer ce mot (l/ligne ou c/colonne)");
                             if (dir == "L" || dir == "LIGNE") direction = 'L';
                             else if (dir == "C" || dir == "COLONNE") direction = 'C';
                             else continue;
@@ -208,8 +311,7 @@ namespace A2_POO_Scrabble
                         tourFini = true;
                     } catch(OperationCanceledException)
                     {
-                        AfficherTour(tour);
-                        Console.WriteLine("\nLe temps est écoulé !\nDommage, tu pourras jouer au prochain tour...\n");
+                        AfficherInterface(joueur.Nom, "Dommage, le temps est écoulé !\nTu pourras jouer au prochain tour...\n\n");
                     }
 
 
@@ -217,8 +319,7 @@ namespace A2_POO_Scrabble
 
                     if(tourFini && motPlace)
                     {
-                        AfficherTour(tour);
-                        Console.WriteLine("\nTu as maintenant un score de " + joueur.Score);
+                        AfficherInterface(joueur.Nom, "Tu as maintenant un score de " + joueur.Score + " !\n");
                     }
 
                     while (joueur.Nombre_Jetons() < 7)
@@ -228,7 +329,7 @@ namespace A2_POO_Scrabble
                     sacJetons.SauvegarderSacJetons("InstanceJetons.txt");
                     SauvegarderJoueurs("Joueurs.txt");
 
-                    Console.WriteLine("Appuie sur une touche pour continuer...");
+                    Console.Write("Appuie sur une touche pour continuer...");
                     Console.ReadKey();
                 }
 
