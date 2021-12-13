@@ -7,10 +7,13 @@ namespace A2_POO_Scrabble
 {
     public class Sac_Jetons
     {
+        #region Attributs
         List<Jeton> jetons;
-
         static Dictionary<char, int> scores = new Dictionary<char, int>();
+        #endregion
 
+
+        #region Constructeurs
         /// <summary>
         /// Créé un sac de jetons à partir d'une liste de jetons dans un fichier de sauvegarde.<br/>
         /// Sur chaque ligne se trouve une lettre, le score associé et le nombre de fois que cette lettre est présente.
@@ -36,7 +39,10 @@ namespace A2_POO_Scrabble
                 }
             }
         }
+        #endregion
 
+
+        #region Méthodes
         /// <summary>
         /// Sauvegarde les jetons actuels du sac dans un fichier.
         /// Voir le constructeur pour le contenu du fichier.
@@ -93,5 +99,6 @@ namespace A2_POO_Scrabble
         {
             return scores.GetValueOrDefault(lettre, 0);
         }
+        #endregion
     }
 }

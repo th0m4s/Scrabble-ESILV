@@ -6,12 +6,16 @@ namespace A2_POO_Scrabble
 {
     public class Joueur
     {
+        #region Attributs
         string nom;
         int score;
         List<string> motsTrouves;
         List<Jeton> mainCourante;
         int tours;
+        #endregion
 
+
+        #region Propriétés
         public int Tours
         {
             set { tours = value; }
@@ -20,7 +24,10 @@ namespace A2_POO_Scrabble
 
         public string Nom => nom;
         public int Score => score;
+        #endregion
 
+
+        #region Constructeurs
         /// <summary>
         /// Créé un joueur à partir d'un nom. Tous les autres champs sont remplis par défaut.
         /// </summary>
@@ -50,7 +57,10 @@ namespace A2_POO_Scrabble
             this.motsTrouves = parts[1].Where(x => x.Length > 0).ToList();
             this.mainCourante = parts[2].Select(x => new Jeton(x[0])).ToList();
         }
+        #endregion
 
+
+        #region Méthodes
         public override string ToString()
         {
             return nom + " : " + score + " point" + (score == 1 ? "" : "s") + "\nMots trouvés :\n   " + string.Join(", ", motsTrouves)
@@ -188,5 +198,6 @@ namespace A2_POO_Scrabble
 
             return joueurs;
         }
+        #endregion
     }
 }

@@ -2,12 +2,19 @@
 {
     public class Jeton
     {
+        #region Attributs
         char lettre;
         int score;
+        #endregion
 
+
+        #region Propriétés
         public char Lettre => lettre;
         public int Score => score;
+        #endregion
 
+
+        #region Constructeurs
         /// <summary>
         /// Créé un jeton à partir de la lettre qu'il représente ainsi que son score.
         /// </summary>
@@ -28,7 +35,10 @@
         {
             this.score = Sac_Jetons.Score_Pour_Lettre(lettre);
         }
+        #endregion
 
+
+        #region Méthodes
         public override string ToString()
         {
             return "Jeton '" + lettre + "' (" + score + " point" + (score <= 1 ? "" : "s") + ")";
@@ -47,7 +57,10 @@
         {
             return (obj is Jeton && (Jeton)obj == this) || (obj is char && this == (char)obj);
         }
+        #endregion
 
+
+        #region Opérateurs
         public static bool operator ==(Jeton a, char b)
         {
             return !ReferenceEquals(a, null) && a.Lettre == b;
@@ -67,5 +80,6 @@
         {
             return !(a == b);
         }
+        #endregion
     }
 }

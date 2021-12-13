@@ -5,11 +5,18 @@ namespace A2_POO_Scrabble
 {
     public class Dictionnaire
     {
+        #region Attributs
         Dictionary<int, List<string>> mots = new Dictionary<int, List<string>>();
         string langue;
+        #endregion
 
+
+        #region Propriétés
         public string Langue => langue;
+        #endregion
 
+
+        #region Constructeurs
         /// <summary>
         /// Créé un dictionnaire à partir de sa langue et d'un tableau de lignes provenant d'un fichier de sauvegarde.
         /// On peut par exemple utiliser <i>File.ReadAllLines("Francais.txt")</i>.
@@ -22,7 +29,10 @@ namespace A2_POO_Scrabble
             for(int i = 0; i < lignes.Length; i += 2)
                 mots.Add(int.Parse(lignes[i]), lignes[i + 1].Split(" ").ToList());
         }
+        #endregion
 
+
+        #region Méthodes
         /// <summary>
         /// Teste l'existence d'un mot dans le dictionnaire.
         /// </summary>
@@ -53,5 +63,6 @@ namespace A2_POO_Scrabble
             if (element.CompareTo(m) > 0) return RechercheDichoRecursif(pos, fin, liste, element);
             else return RechercheDichoRecursif(0, pos, liste, element);
         }
+        #endregion
     }
 }
